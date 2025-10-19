@@ -4,7 +4,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from googleapiclient.discovery import build
 from datetime import datetime
-import os
 
 # =========================================
 # 🚀 Initialize YouTube API
@@ -96,7 +95,18 @@ st.sidebar.write("🌿 *MindfulApp helps track emotions and recommend personaliz
 st.title("🌻 Mindful Content Companion (MCC)")
 st.subheader("Track your mood, explore mindful content, and reflect on your emotional growth.")
 
-mood = st.selectbox("How are you feeling right now?", ["Stressed", "Anxious", "Tired", "Motivated", "Distracted", "Relaxed"])
+# --- Updated Mood Input ---
+st.markdown("### 💭 How are you feeling right now?")
+
+default_moods = ["Stressed", "Anxious", "Tired", "Motivated", "Distracted", "Relaxed", "Other"]
+selected_mood = st.selectbox("Select a mood or choose 'Other' to type your own:", default_moods)
+
+if selected_mood == "Other":
+    mood = st.text_input("Type your current mood in one word:", placeholder="e.g., Overwhelmed, Excited, Lonely, Curious")
+else:
+    mood = selected_mood
+
+# --- Other inputs ---
 goal = st.text_input("What do you want to achieve right now?", placeholder="e.g. Need something calming for focus")
 desired_mood = st.selectbox("How do you want to feel after this?", ["Relaxed", "Motivated", "Peaceful", "Focused"])
 
@@ -118,7 +128,6 @@ if st.button("🌱 Generate Recommendations"):
         st.success(f"🎯 Recommended for '{goal}' → Target mood: {desired_mood}")
 
         st.markdown("### 🌼 Suggested Content")
-
         for _, row in local_recs.iterrows():
             st.markdown(f"**{row['title']}**  \n_Type: {row['type']}_  \n[Watch here]({row['link']})")
 
@@ -148,4 +157,5 @@ if len(st.session_state.sessions) > 0:
     st.markdown("### 🧾 Your Past Sessions")
     history_df = pd.DataFrame(st.session_state.sessions)
     st.dataframe(history_df)
+
 
